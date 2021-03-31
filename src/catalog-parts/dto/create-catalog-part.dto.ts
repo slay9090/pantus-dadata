@@ -1,7 +1,6 @@
 
 
 export class CreateCatalogPartDto {
-
   applicabilities: string
   categories_group: string
   categories_chapter: string
@@ -9,5 +8,4 @@ export class CreateCatalogPartDto {
   name: string
   oem_code: string
   ole: string
-
 }
