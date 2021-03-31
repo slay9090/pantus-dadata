@@ -2,18 +2,19 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { CatalogPartsService } from './catalog-parts.service';
 import { CreateCatalogPartDto } from './dto/create-catalog-part.dto';
 import { UpdateCatalogPartDto } from './dto/update-catalog-part.dto';
+import { CatalogPart } from "./entities/catalog-part.entity";
 
 @Controller('catalog-parts')
 export class CatalogPartsController {
   constructor(private readonly catalogPartsService: CatalogPartsService) {}
 
   @Post()
-  create(@Body() createCatalogPartDto: CreateCatalogPartDto) {
+  create(@Body() createCatalogPartDto: CreateCatalogPartDto) : Promise<CatalogPart> {
     return this.catalogPartsService.create(createCatalogPartDto);
   }
 
   @Get()
-  findAll() {
+  findAll() : Promise<CatalogPart[]> {
     return this.catalogPartsService.findAll();
   }
 
