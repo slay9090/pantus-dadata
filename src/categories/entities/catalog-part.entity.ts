@@ -7,19 +7,19 @@ export type CatalogPartDocument = CatalogPart & Document;
 @Schema()
 export class CatalogPart {
   @Prop()
-  applicabilities: string
+  AC_TREE_ID: string
   @Prop()
-  categories_group: string
+  NAME: string
   @Prop()
-  categories_chapter: string
-  @Prop()
-  categories_node: string
-  @Prop()
-  name: string
-  @Prop()
-  oem_code: string
-  @Prop()
-  ole: string
+  PARENT_ID: string
+  // @Prop()
+  // categories_node: string
+  // @Prop()
+  // name: string
+  // @Prop()
+  // oem_code: string
+  // @Prop()
+  // ole: string
 }
 
 export const CatalogPartSchema = SchemaFactory.createForClass(CatalogPart)
