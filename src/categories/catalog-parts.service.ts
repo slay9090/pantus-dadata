@@ -21,7 +21,7 @@ export class CatalogPartsService {
  //  }
 
   async findAll(): Promise<Categories[]> {
-    return this.categoriesModel.find().exec()
+    return  await  this.categoriesModel.find().exec()
   }
 
   // findOne(id: number) {

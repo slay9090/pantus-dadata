@@ -35,20 +35,31 @@ export class CarModelsService {
   async findSearch(query:QueryValidateDto) {
     const carModels = await this.carModelsModel.find().where({SKU: query.sku,  BRAND: query.brand}).exec()
 
+        //.createIndex( { name: "text", description: "text" } )
+    // this.categoriesModel.createIndex( { name: "text", description: "text" } )
+    const x = await this.categoriesModel.find({ AC_TREE_ID: 12326 }).exec()
+    console.log(x);
+
     // this.joinCategories(carModels);
-    console.log(await this.joinCategories(carModels));
+    // console.log(await this.joinCategories(carModels));
 
 
 
-    return carModels
+    return x
   }
   async joinCategories(data){
 
-   const result = data.map(elem => {
-        this.categoriesModel.find().where({AC_TREE_ID: elem.CATEGORY_ID})
-    })
+    // console.log(data);
 
-   return  await result
+
+
+   // const result = data.map(elem => {
+   //   // console.log('LOL',elem.CATEGORY_ID);
+   //
+   //
+   //  })
+   //
+   // return  await result
 
 
   }

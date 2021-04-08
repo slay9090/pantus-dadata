@@ -20,7 +20,7 @@ export class CarModelsController {
   }
 
   @Get('search')
-  findSearch(@Query(ValidationPipe) query: QueryValidateDto ) : Promise<CarModels[]> {
+  findSearch(@Query(ValidationPipe) query: QueryValidateDto )  {
     return this.carModelsService.findSearch(query);
   }
 

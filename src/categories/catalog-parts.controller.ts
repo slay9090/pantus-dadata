@@ -2,7 +2,8 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { CatalogPartsService } from './catalog-parts.service';
 import { CreateCatalogPartDto } from './dto/create-catalog-part.dto';
 import { UpdateCatalogPartDto } from './dto/update-catalog-part.dto';
-import { CatalogPart } from "./entities/catalog-part.entity";
+// import { CatalogPart } from "./entities/catalog-part.entity";
+import { Categories } from './schemas/categories.schema';
 
 @Controller('categories')
 export class CatalogPartsController {
@@ -14,8 +15,8 @@ export class CatalogPartsController {
   // }
 
   @Get()
-  findAll() : Promise<CatalogPart[]> {
-    return this.catalogPartsService.findAll();
+  async findAll() : Promise<Categories[]> {
+    return await this.catalogPartsService.findAll();
   }
 
   // @Get(':id')
