@@ -20,8 +20,8 @@ export class CarModelsController {
   }
 
   @Get('search')
-  findSearch(@Query(ValidationPipe) query: QueryValidateDto )  {
-    return this.carModelsService.findSearch(query);
+  async findSearch(@Query(ValidationPipe) query: QueryValidateDto )  {
+    return await this.carModelsService.findSearch(query);
   }
 
   // @Get(':id')

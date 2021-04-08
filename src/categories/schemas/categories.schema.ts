@@ -10,7 +10,7 @@ export class Categories {
   @Prop()
   NAME: string
   @Prop()
-  PARENT_ID: string
+  PARENT_ID: number
 }
 
 export const categoriesSchema = SchemaFactory.createForClass(Categories);

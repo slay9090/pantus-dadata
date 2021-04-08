@@ -16,7 +16,7 @@ export class CarModels {
   @Prop()
   NAME: string
   @Prop()
-  CATEGORY_ID: string
+  CATEGORY_ID: number
 }
 
 export const carModelsSchema = SchemaFactory.createForClass(CarModels);
