@@ -28,8 +28,24 @@ export class CarModelsService {
     return this.carModelsModel.create(x)
   }
 
-  findAll() {
-    return this.carModelsModel.find().limit(50).exec()
+ async findAll(query) {
+
+   const pageOptions = {
+     page: parseInt(query.page, 10) || 0,
+     limit: parseInt(query.limit, 10) || 10
+   }
+
+    const startTime : number = Date.now();
+    const count = await this.carModelsModel.count()
+    const data = await this.carModelsModel
+      .find()
+      .skip(pageOptions.page * pageOptions.limit)
+      .limit(pageOptions.limit)
+      .lean()
+      .exec()
+
+    const endTime : number = Date.now();
+    return [{meta: {count: count, explain: (endTime - startTime) + 'ms'}, data: data}]
   }
 
   async findSearch(query:QueryValidateDto) {
@@ -72,7 +88,7 @@ export class CarModelsService {
     // return  await  this.carModelsModel.find({ AC_TREE_ID: id }).exec()
     // return  await  this.carModelsModel.find().where('AC_TREE_ID').in(id).exec()
     // this.categoriesModel.createIndexes({AC_TREE_ID: 1})
-    return await this.categoriesModel.find({ AC_TREE_ID: {$in: id } }).sort({AC_TREE_ID: 1}).limit(10000).lean().exec()
+    return await this.categoriesModel.find({ AC_TREE_ID: {$in: id } }).sort({AC_TREE_ID: 1}).limit(10000).lean().explain("executionStats").exec()
   }
 
 

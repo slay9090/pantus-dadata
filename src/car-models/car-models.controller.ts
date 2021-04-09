@@ -15,8 +15,9 @@ export class CarModelsController {
   }
 
   @Get()
-  findAll() : Promise<CarModels[]> {
-    return this.carModelsService.findAll();
+  findAll(@Query() query)  {
+
+    return this.carModelsService.findAll(query);
   }
 
   @Get('search')

@@ -20,8 +20,26 @@ export class CatalogPartsService {
  //   return newPart.save()
  //  }
 
-  async findAll(): Promise<Categories[]> {
-    return  await  this.categoriesModel.find().exec()
+  async findAll(query) {
+
+    const pageOptions = {
+      page: parseInt(query.page, 10) || 0,
+      limit: parseInt(query.limit, 10) || 10
+    }
+
+    const startTime : number = Date.now();
+    const count = await this.categoriesModel.count()
+    const data = await this.categoriesModel
+      .find()
+      .skip(pageOptions.page * pageOptions.limit)
+      .limit(pageOptions.limit)
+      .lean()
+      .exec()
+    const endTime : number = Date.now();
+
+    return [{meta: {count: count, explain: (endTime - startTime) + 'ms'}, data: data}]
+
+
   }
 
   // findOne(id: number) {

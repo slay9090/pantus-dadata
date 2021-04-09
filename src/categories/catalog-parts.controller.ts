@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { CatalogPartsService } from './catalog-parts.service';
 import { CreateCatalogPartDto } from './dto/create-catalog-part.dto';
 import { UpdateCatalogPartDto } from './dto/update-catalog-part.dto';
@@ -15,8 +15,8 @@ export class CatalogPartsController {
   // }
 
   @Get()
-  async findAll() : Promise<Categories[]> {
-    return await this.catalogPartsService.findAll();
+  async findAll(@Query() query)  {
+    return await this.catalogPartsService.findAll(query);
   }
 
   // @Get(':id')
