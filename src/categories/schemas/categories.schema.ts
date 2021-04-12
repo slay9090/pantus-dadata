@@ -11,6 +11,8 @@ export class Categories {
   NAME: string
   @Prop()
   PARENT_ID: number
+  @Prop()
+  children: string[];
 }
 
 export const categoriesSchema = SchemaFactory.createForClass(Categories);

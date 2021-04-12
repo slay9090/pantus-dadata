@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { isNotEmpty, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class QueryValidateDto {
   @IsNotEmpty()
@@ -8,4 +8,11 @@ export class QueryValidateDto {
   @IsNotEmpty()
   @IsString()
   sku: string;
+
+
+
+  page: string;
+
+
+  limit: string;
 }

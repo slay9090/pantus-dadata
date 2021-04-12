@@ -49,10 +49,35 @@ export class CarModelsService {
   }
 
   async findSearch(query:QueryValidateDto) {
+
+    const pageOptions = {
+      page: parseInt(query.page, 10) || 0,
+      limit: parseInt(query.limit, 10) || 10
+    }
+
     // this.carModelsModel.createIndexes({CATEGORY_ID: 1})
-    const carModels = await this.carModelsModel.find().where({SKU: query.sku,  BRAND: query.brand}).sort({CATEGORY_ID: 1}).lean().exec();
-    return await this.joinCategories(carModels)
+    const startTime : number = Date.now();
+    const count = await this.carModelsModel.find().where({SKU: query.sku,  BRAND: query.brand}).count()
+    const carModels = await this.carModelsModel
+      .find()
+      .where({SKU: query.sku,  BRAND: query.brand})
+      .skip(pageOptions.page * pageOptions.limit)
+      .limit(pageOptions.limit)
+      .sort({CATEGORY_ID: 1})
+      .lean()
+      .exec();
+
+    const endTime : number = Date.now();
+
+    return [{meta: {count: count, explain: (endTime - startTime) + 'ms'}, data: await this.joinCategories(carModels)}]
+
+
   }
+
+
+
+
+
 
   async joinCategories(data){
     const IdsCategories = data.map((elem) => {
@@ -66,16 +91,8 @@ export class CarModelsService {
         categories: categories[index]
       })
     })
-    // const x = await this.categoriesModel.find({ AC_TREE_ID: 12326 }).exec()
-    // console.log(x);
-
-   // const result = await Promise.all(data.map(async (elem) => {
-   //   let cat = await this.getCategories(elem.CATEGORY_ID)
-   //   return [{model: elem, categories: cat}]
-   //  }));
 
     return res
-   // return  result
 
 
   }
@@ -83,12 +100,58 @@ export class CarModelsService {
   async getCategories(id) {
    return  await this.categoriesModel.find({ AC_TREE_ID: id }).exec()
   }
-  async getCategoriesIds(id) {
-    // console.log(id)
-    // return  await  this.carModelsModel.find({ AC_TREE_ID: id }).exec()
-    // return  await  this.carModelsModel.find().where('AC_TREE_ID').in(id).exec()
-    // this.categoriesModel.createIndexes({AC_TREE_ID: 1})
-    return await this.categoriesModel.find({ AC_TREE_ID: {$in: id } }).sort({AC_TREE_ID: 1}).limit(10000).lean().explain("executionStats").exec()
+
+  async getCategoriesIds(ids) {
+
+    let result = []
+
+    const arr = await this.categoriesModel.find({}).sort({AC_TREE_ID: 1}).lean().exec()
+
+
+
+    function getPatch (ids){
+      arr.forEach(elem => {
+        ids.forEach((id, index) => {
+          if (elem.AC_TREE_ID === id) {
+            result[index] = elem
+            if(elem.PARENT_ID !== null){
+              // console.log(elem.PARENT_ID, index);
+              recursive(elem.PARENT_ID, index)
+            }
+          }
+        })
+
+      })
+
+    }
+
+    function recursive(parrentId, index){
+      arr.forEach( elem => {
+        if (elem.AC_TREE_ID === parrentId) {
+          result[index] = { ...elem , child: result[index]}
+
+          if(elem.PARENT_ID !== null){
+            recursive(elem.PARENT_ID, index)
+          }
+
+        }
+      })
+    }
+
+    getPatch(ids);
+
+    return result
+
+
+
+  }
+
+
+
+
+
+  getTreeCategories(data, ids){
+
   }
 
 
