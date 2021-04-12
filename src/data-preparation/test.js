@@ -1,4 +1,4 @@
-arr = [
+const arr = [
   {
     "_id": "6073f378599dbb1d3474e666",
     "AC_TREE_ID": 12323,
@@ -38,7 +38,7 @@ arr = [
   },
 ]
 
-let ids = [12347, 12324]
+const ids = [12347, 12324]
 let result = []
 
 function getPatch (ids){
@@ -63,7 +63,7 @@ function recursive(parrentId, index){
 
     arr.forEach( elem => {
       if (elem.AC_TREE_ID === parrentId) {
-        result[index] = { elem ,child: result[index]}
+        result[index] = { ...elem ,child: result[index]}
 
         if(elem.PARENT_ID !== null){
           recursive(elem.PARENT_ID, index)
