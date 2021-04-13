@@ -75,10 +75,6 @@ export class CarModelsService {
   }
 
 
-
-
-
-
   async joinCategories(data){
     const IdsCategories = data.map((elem) => {
       return elem.CATEGORY_ID
@@ -95,10 +91,6 @@ export class CarModelsService {
     return res
 
 
-  }
-
-  async getCategories(id) {
-   return  await this.categoriesModel.find({ AC_TREE_ID: id }).exec()
   }
 
   async getCategoriesIds(ids) {
@@ -150,9 +142,7 @@ export class CarModelsService {
 
 
 
-  getTreeCategories(data, ids){
 
-  }
 
 
   // findOne(id: number) {

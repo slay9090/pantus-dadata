@@ -3,8 +3,8 @@ import { MongooseModule } from "@nestjs/mongoose";
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CategoriesModule } from './categories/catalog-parts.module';
-import { CarModelsModule } from './car-models/car-models.module';
+
+import { CatalogModule } from './catalog/catalog.module';
 
 
 
@@ -12,13 +12,13 @@ import { CarModelsModule } from './car-models/car-models.module';
 @Module({
   imports: [
     MongooseModule.forRoot('mongodb://root:dagdycUCFYbV9kAu@adm-dev.pantus.ru:27017/?authSource=admin&readPreference=primary&appname=MongoDB%20Compass&ssl=false',
-      {dbName: 'original-nomenclature'}
+      {dbName: 'dadata'}
     ),
-    CategoriesModule,
-    CarModelsModule
+
+    CatalogModule
 
   ],
-  controllers: [AppController],
+  controllers: [AppController,],
   providers: [AppService],
 })
 export class AppModule {}
