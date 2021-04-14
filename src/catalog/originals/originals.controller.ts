@@ -3,6 +3,7 @@ import { OriginalsService } from './originals.service';
 import { CreateOriginalDto } from './dto/create-original.dto';
 import { UpdateOriginalDto } from './dto/update-original.dto';
 import { QueryValidateDto } from './dto/query-validate.dto';
+import { type } from 'os';
 
 
 @Controller('catalog/originals')
@@ -27,6 +28,7 @@ export class OriginalsController {
 
   @Get('search')
   async searchParts(@Query(ValidationPipe) query: QueryValidateDto )  {
+    console.log(typeof query.limit);
     return await this.originalsService.search(query);
   }
 

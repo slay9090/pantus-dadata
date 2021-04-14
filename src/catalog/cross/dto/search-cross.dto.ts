@@ -1,13 +1,13 @@
 import { isNotEmpty, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
-export class QueryValidateDto {
+export class SearchCrossDto {
   @IsNotEmpty()
   @IsString()
-  brand: string;
+  originalbrand: string;
 
   @IsNotEmpty()
   @IsString()
-  sku: string;
+  originalsku: string;
 
 
 

@@ -9,7 +9,8 @@ import {
   originals_parts,
   originals_partsDocument,
 } from './schemas/originals.schema';
-import { QueryValidateDto } from '../../car-models/dto/query-validate.dto';
+import { QueryValidateDto } from './dto/query-validate.dto';
+
 
 
 @Injectable()
@@ -40,7 +41,17 @@ export class OriginalsService {
       .exec()
 
     const endTime : number = Date.now();
-    return [{meta: {count: count, explain: (endTime - startTime) + 'ms'}, data: data}]
+
+   return [
+     {
+       meta: {
+         count: count,
+         explain: (endTime - startTime) + 'ms',
+         query:  query ,
+       },
+       data: data
+
+     }];
   }
 
   async getAllCategories(query) {
@@ -59,7 +70,17 @@ export class OriginalsService {
       .exec()
 
     const endTime : number = Date.now();
-    return [{meta: {count: count, explain: (endTime - startTime) + 'ms'}, data: data}]
+
+    return [
+      {
+        meta: {
+          count: count,
+          explain: (endTime - startTime) + 'ms',
+          query:  query ,
+        },
+        data: data
+
+      }];
   }
 
 
@@ -82,7 +103,7 @@ export class OriginalsService {
 
     const pageOptions = {
       page: parseInt(query.page, 10) || 0,
-      limit: parseInt(query.limit, 10) || 10
+      limit: parseInt(query.limit) === 0 ? parseInt(query.limit) : parseInt(query.limit) ? parseInt(query.limit) : 10
     }
 
     // this.carModelsModel.createIndexes({CATEGORY_ID: 1})
@@ -167,7 +188,17 @@ export class OriginalsService {
     }
 
 
-    return [{meta: {count: count, explain: (endTime - startTime) + 'ms'}, data: await joinCategories(carModels, this.originalsCategories)}]
+    // return [{meta: {count: count, explain: (endTime - startTime) + 'ms'}, data: }]
+
+    return [
+      {
+        meta: {
+          count: count,
+          explain: (endTime - startTime) + 'ms',
+          query:  query ,
+        },
+        data: await joinCategories(carModels, this.originalsCategories)
+      }];
 
 
 
