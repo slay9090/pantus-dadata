@@ -57,17 +57,80 @@ export class OriginalsService {
   async getAllCategories(query) {
     const pageOptions = {
       page: parseInt(query.page, 10) || 0,
-      limit: parseInt(query.limit, 10) || 10
+      limit: parseInt(query.limit) === 0 ? parseInt(query.limit) : parseInt(query.limit) ? parseInt(query.limit) : 10
     }
 
     const startTime : number = Date.now();
-    const count = await this.originalsCategories.count()
-    const data = await this.originalsCategories
-      .find()
-      .skip(pageOptions.page * pageOptions.limit)
-      .limit(pageOptions.limit)
-      .lean()
-      .exec()
+    const count = await this.originalsParts.find({}, {CATEGORY_ID: 1}).where({BRAND: query.brand}).sort({CATEGORY_ID: 1}).distinct("CATEGORY_ID").count()
+
+
+    const brandsIds = await this.originalsParts.find({}, {CATEGORY_ID: 1}).where({BRAND: query.brand}).sort({CATEGORY_ID: 1}).distinct("CATEGORY_ID").exec()
+
+    // console.log('ids',brandsIds);
+
+
+    async function getTreeCategoriesByIds(ids, originalsCategories) {
+
+      let result = []
+
+      const arr = await originalsCategories
+        .find({})
+        .sort({ AC_TREE_ID: 1 })
+        .skip(pageOptions.page * pageOptions.limit)
+        .limit(pageOptions.limit)
+        .lean()
+        .exec();
+
+
+
+      function getPatch (ids){
+        arr.forEach(elem => {
+          ids.forEach((id, index) => {
+            if (elem.AC_TREE_ID === id) {
+              result[index] = elem
+              if(elem.PARENT_ID !== null){
+                // console.log(elem.PARENT_ID, index);
+                recursive(elem.PARENT_ID, index)
+              }
+            }
+          })
+
+        })
+
+      }
+
+      function recursive(parrentId, index){
+        arr.forEach( elem => {
+          if (elem.AC_TREE_ID === parrentId) {
+            result[index] = { ...elem , child: result[index]}
+
+            if(elem.PARENT_ID !== null){
+              recursive(elem.PARENT_ID, index)
+            }
+
+          }
+        })
+      }
+
+      getPatch(ids);
+
+      return result
+
+
+
+    }
+
+
+
+
+
+// const  data = []
+//     const data = await this.originalsCategories
+//       .find({ AC_TREE_ID: {$in: brandsIds } } )
+//       .skip(pageOptions.page * pageOptions.limit)
+//       .limit(pageOptions.limit)
+//       .lean()
+//       .exec()
 
     const endTime : number = Date.now();
 
@@ -78,7 +141,7 @@ export class OriginalsService {
           explain: (endTime - startTime) + 'ms',
           query:  query ,
         },
-        data: data
+        data: await getTreeCategoriesByIds(brandsIds, this.originalsCategories)
 
       }];
   }
