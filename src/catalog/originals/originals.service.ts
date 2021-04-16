@@ -62,35 +62,38 @@ export class OriginalsService {
 
     const startTime : number = Date.now();
     const count = await this.originalsParts.find({}, {CATEGORY_ID: 1}).where({BRAND: query.brand}).sort({CATEGORY_ID: 1}).distinct("CATEGORY_ID").count()
-
-
     const brandsIds = await this.originalsParts.find({}, {CATEGORY_ID: 1}).where({BRAND: query.brand}).sort({CATEGORY_ID: 1}).distinct("CATEGORY_ID").exec()
-
-    // console.log('ids',brandsIds);
 
 
     async function getTreeCategoriesByIds(ids, originalsCategories) {
+
+
 
       let result = []
 
       const arr = await originalsCategories
         .find({})
-        .sort({ AC_TREE_ID: 1 })
+        .sort({ CATEGORY_ID: 1 })
         .skip(pageOptions.page * pageOptions.limit)
         .limit(pageOptions.limit)
         .lean()
         .exec();
 
-
+      // console.log(arr);
 
       function getPatch (ids){
         arr.forEach(elem => {
+          // console.log(elem);
           ids.forEach((id, index) => {
-            if (elem.AC_TREE_ID === id) {
+
+            // console.log(elem.CATEGORY_ID);
+            if (elem.CATEGORY_ID === id) {
+              // console.log(elem);
+              // console.log(elem.CATEGORY_ID);
               result[index] = elem
-              if(elem.PARENT_ID !== null){
-                // console.log(elem.PARENT_ID, index);
-                recursive(elem.PARENT_ID, index)
+              if(elem.CATEGORY_PARENT_ID !== null){
+                // console.log(elem.CATEGORY_PARENT_ID, index);
+                recursive(elem.CATEGORY_PARENT_ID, index)
               }
             }
           })
@@ -101,11 +104,12 @@ export class OriginalsService {
 
       function recursive(parrentId, index){
         arr.forEach( elem => {
-          if (elem.AC_TREE_ID === parrentId) {
+          if (elem.CATEGORY_ID === parrentId) {
+            // console.log(elem);
             result[index] = { ...elem , child: result[index]}
 
-            if(elem.PARENT_ID !== null){
-              recursive(elem.PARENT_ID, index)
+            if(elem.CATEGORY_PARENT_ID !== null){
+              recursive(elem.CATEGORY_PARENT_ID, index)
             }
 
           }
@@ -126,7 +130,7 @@ export class OriginalsService {
 
 // const  data = []
 //     const data = await this.originalsCategories
-//       .find({ AC_TREE_ID: {$in: brandsIds } } )
+//       .find({ CATEGORY_ID: {$in: brandsIds } } )
 //       .skip(pageOptions.page * pageOptions.limit)
 //       .limit(pageOptions.limit)
 //       .lean()
@@ -195,7 +199,7 @@ export class OriginalsService {
       const  res  = [];
       data.map((elem, index) => {
         res.push({
-          model: elem,
+          part: elem,
           categories: categories[index]
         })
       })
@@ -209,18 +213,18 @@ export class OriginalsService {
 
       let result = []
 
-      const arr = await originalsCategories.find({}).sort({AC_TREE_ID: 1}).lean().exec()
+      const arr = await originalsCategories.find({}).sort({CATEGORY_ID: 1}).lean().exec()
 
 
 
       function getPatch (ids){
         arr.forEach(elem => {
           ids.forEach((id, index) => {
-            if (elem.AC_TREE_ID === id) {
+            if (elem.CATEGORY_ID === id) {
               result[index] = elem
-              if(elem.PARENT_ID !== null){
-                // console.log(elem.PARENT_ID, index);
-                recursive(elem.PARENT_ID, index)
+              if(elem.CATEGORY_PARENT_ID !== null){
+                // console.log(elem.CATEGORY_PARENT_ID, index);
+                recursive(elem.CATEGORY_PARENT_ID, index)
               }
             }
           })
@@ -231,11 +235,11 @@ export class OriginalsService {
 
       function recursive(parrentId, index){
         arr.forEach( elem => {
-          if (elem.AC_TREE_ID === parrentId) {
+          if (elem.CATEGORY_ID === parrentId) {
             result[index] = { ...elem , child: result[index]}
 
-            if(elem.PARENT_ID !== null){
-              recursive(elem.PARENT_ID, index)
+            if(elem.CATEGORY_PARENT_ID !== null){
+              recursive(elem.CATEGORY_PARENT_ID, index)
             }
 
           }

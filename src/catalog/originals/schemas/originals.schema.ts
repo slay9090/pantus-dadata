@@ -27,11 +27,15 @@ export type originals_categoriesDocument = originals_categories  & Document;
 @Schema()
 export class originals_categories {
   @Prop()
-  AC_TREE_ID: number
+  CATEGORY_ID: number
   @Prop()
-  NAME: string
+  CATEGORY_PARENT_ID: number
   @Prop()
-  PARENT_ID: number
+  CATEGORY_NAME: string
+  @Prop()
+  BRAND_NAME: string
+  @Prop()
+  MODEL_NAME: string
   @Prop()
   children: string[];
 }
