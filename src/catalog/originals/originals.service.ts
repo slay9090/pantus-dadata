@@ -175,15 +175,37 @@ export class OriginalsService {
 
     // this.carModelsModel.createIndexes({CATEGORY_ID: 1})
     const startTime : number = Date.now();
-    const count = await this.originalsParts.find().where({SKU: query.sku,  BRAND: query.brand}).count()
-    const carModels = await this.originalsParts
-      .find()
-      .where({SKU: query.sku,  BRAND: query.brand})
-      .skip(pageOptions.page * pageOptions.limit)
-      .limit(pageOptions.limit)
-      .sort({CATEGORY_ID: 1})
-      .lean()
-      .exec();
+
+    let count = null
+    let carModels = null
+
+
+    if (query.brand) {
+      console.log('brand');
+      count = await this.originalsParts.find().where({SKU: query.sku,  BRAND: query.brand}).count()
+      carModels = await this.originalsParts
+        .find()
+        .where({SKU: query.sku,  BRAND: query.brand})
+        .skip(pageOptions.page * pageOptions.limit)
+        .limit(pageOptions.limit)
+        .sort({CATEGORY_ID: 1})
+        .lean()
+        .exec();
+    }
+    else {
+      console.log('no brand');
+       count = await this.originalsParts.find().where({SKU: query.sku,  }).count()
+       carModels = await this.originalsParts
+        .find()
+        .where({SKU: query.sku,  })
+        .skip(pageOptions.page * pageOptions.limit)
+        .limit(pageOptions.limit)
+        .sort({CATEGORY_ID: 1})
+        .lean()
+        .exec();
+    }
+
+
 
     const endTime : number = Date.now();
 
