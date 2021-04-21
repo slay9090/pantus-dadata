@@ -173,37 +173,40 @@ export class OriginalsService {
       limit: parseInt(query.limit) === 0 ? parseInt(query.limit) : parseInt(query.limit) ? parseInt(query.limit) : 10
     }
 
-    // this.carModelsModel.createIndexes({CATEGORY_ID: 1})
     const startTime : number = Date.now();
 
-    let count = null
-    let carModels = null
+    // @ts-ignore
+      const getExisting = (obj) => Object.assign(...Object.keys(obj)
+        .filter(key => obj[key] !== undefined)
+        .map(key => ({[key]: obj[key]})) )
+
+      let count = null;
+      let carModels = null;
 
 
-    if (query.brand) {
-      console.log('brand');
-      count = await this.originalsParts.find().where({SKU: query.sku,  BRAND: query.brand}).count()
-      carModels = await this.originalsParts
-        .find()
-        .where({SKU: query.sku,  BRAND: query.brand})
-        .skip(pageOptions.page * pageOptions.limit)
-        .limit(pageOptions.limit)
-        .sort({CATEGORY_ID: 1})
-        .lean()
-        .exec();
-    }
-    else {
-      console.log('no brand');
-       count = await this.originalsParts.find().where({SKU: query.sku,  }).count()
-       carModels = await this.originalsParts
-        .find()
-        .where({SKU: query.sku,  })
-        .skip(pageOptions.page * pageOptions.limit)
-        .limit(pageOptions.limit)
-        .sort({CATEGORY_ID: 1})
-        .lean()
-        .exec();
-    }
+      if(query.type === 'relevant') {
+        count = await this.originalsParts.find({$text: {$search: query.text}}, {score: {$meta: "textScore"}}).count()
+        carModels = await this.originalsParts
+          .find({$text: {$search: query.text}}, {RATING: {$meta: "textScore"}})
+          .sort({score:{$meta:"textScore"}})
+          .skip(pageOptions.page * pageOptions.limit)
+          .limit(pageOptions.limit)
+          .lean()
+          .exec();
+      }
+      if(query.type === 'strict') {
+        count = await this.originalsParts.find().where(getExisting({SKU: query.sku, BRAND: query.brand})).count()
+        carModels = await this.originalsParts
+          .find()
+          .where(getExisting({SKU: query.sku, BRAND: query.brand}))
+          .skip(pageOptions.page * pageOptions.limit)
+          .limit(pageOptions.limit)
+          .sort({CATEGORY_ID: 1})
+          .lean()
+          .exec();
+      }
+
+
 
 
 

@@ -2,14 +2,16 @@ import { isNotEmpty, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class QueryValidateDto {
 
+  @IsNotEmpty()
+  @IsString()
+  type: string;
 
   brand: string;
 
-  @IsNotEmpty()
-  @IsString()
+
   sku: string;
 
-
+  text: string;
 
   page: string;
 

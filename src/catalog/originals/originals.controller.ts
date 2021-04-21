@@ -28,7 +28,7 @@ export class OriginalsController {
 
   @Get('search')
   async searchParts(@Query(ValidationPipe) query: QueryValidateDto )  {
-    console.log(typeof query.limit);
+
     return await this.originalsService.search(query);
   }
 
