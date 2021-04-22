@@ -5,7 +5,9 @@ import { UpdateCrossDto } from './dto/update-cross.dto';
 // import { QueryValidateDto } from '../originals/dto/query-validate.dto';
 import { SearchCrossDto } from './dto/search-cross.dto';
 import { GetAllCrossDto } from './dto/get-all-cross.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('cross parts')
 @Controller('catalog/cross')
 export class CrossController {
   constructor(private readonly crossService: CrossService) {}
