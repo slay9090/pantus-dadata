@@ -11,16 +11,16 @@ export class originals_parts  {
   @ApiProperty({ example: 'ВАЗ', description: 'Название бренда' })
   BRAND: string
   @Prop()
-  @ApiProperty({ example: '11180-3101301-01', description: 'Артикул' })
+  @ApiProperty({ example: '11183-1006322-00', description: 'Артикул' })
   SKU: string
   @Prop()
-  @ApiProperty({ example: 'Granta Cross', description: 'Название модели авто' })
+  @ApiProperty({ example: '21728', description: 'Название модели авто' })
   MODEL_NAME: string
   @Prop()
-  @ApiProperty({ example: 'Груз колеса балансировочный 8450051095', description: 'Название з/п' })
+  @ApiProperty({ example: 'Уплотнитель', description: 'Название з/п' })
   NAME: string
   @Prop()
-  @ApiProperty({ example: 3562323, description: 'Идентификатор категории' })
+  @ApiProperty({ example: 2007474, description: 'Идентификатор категории' })
   CATEGORY_ID: number
 }
 

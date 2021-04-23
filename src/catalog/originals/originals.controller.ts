@@ -2,73 +2,69 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ValidationPip
 import { OriginalsService } from './originals.service';
 import { CreateOriginalDto } from './dto/create-original.dto';
 import { UpdateOriginalDto } from './dto/update-original.dto';
-import { QueryValidateDto } from './dto/query-validate.dto';
+import {
+  GetAllCategoriesQueryValidateDto,
+  GetAllPartsQueryValidateDto,
+  SearchRelevantQueryValidateDto,
+  SearchStrictQueryValidateDto,
+} from './dto/query-validate.dto';
 import { type } from 'os';
-import { ApiBody, ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOkResponse, ApiOperation, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   originals_categories, originals_categoriesDocument, originals_parts,
 } from './schemas/originals.schema';
 import { SearchResponse } from './schemas/search-response.schema';
 
-@ApiTags('originals parts')
+@ApiTags('Методы API каталога оригинальных з/ч')
 @Controller('catalog/originals')
 export class OriginalsController {
   constructor(private readonly originalsService: OriginalsService) {}
 
-  // @Post()
-  // create(@Body() createOriginalDto: CreateOriginalDto) {
-  //   return this.originalsService.create(createOriginalDto);
-  // }
 
   @Get('parts')
-  getAllParts(@Query() query) {
+  @ApiOperation({ summary: 'Получить все з/ч' })
+  @ApiOkResponse({
+    description: 'Example: https://aoc.pantus.ru/catalog/originals/parts?page=0&limit=1',
+    type: originals_parts,
+    isArray: true, // <= diff is here
+  })
+  getAllParts(@Query(new ValidationPipe({ skipMissingProperties: true })) query: GetAllPartsQueryValidateDto ) {
     return this.originalsService.getAllParts(query);
   }
 
   @Get('categories')
-  getAllCategories(@Query() query) {
+  @ApiOperation({ summary: 'Получить все категории по бренду' })
+  @ApiOkResponse({
+    description: 'Example: https://aoc.pantus.ru/catalog/originals/categories?brand=ВАЗ&page=0&limit=1',
+    type: originals_categories,
+    isArray: true, // <= diff is here
+  })
+  getAllCategories(@Query(new ValidationPipe({ skipMissingProperties: true })) query: GetAllCategoriesQueryValidateDto) {
     return this.originalsService.getAllCategories(query);
   }
 
 
-  @Get('search')
-
-  // @ApiResponse({
-  //   status: 200,
-  //   description: 'https://aoc.pantus.ru/catalog/originals/search?type=relevant&text=кАмазик 14.1701092&page=0&limit=100',
-  //   isArray: true,
-  //   // schema: {
-  //   //   type: 'array',
-  //   //   items: {
-  //   //     type: 'object',
-  //   //     items: {},
-  //   //   },
-  //   // },
-  //   type:
-  // })
+  @Get('search/strict')
+  @ApiOperation({ summary: 'Строгий поиск' })
   @ApiOkResponse({
-    description: 'Cat object',
+    description: 'Example: https://aoc.pantus.ru/catalog/originals/search/strict?sku=11183-1006322-00&page=0&limit=1',
     type: SearchResponse,
-    isArray: true // <= diff is here
+    isArray: true, // <= diff is here
   })
-  async searchParts(@Query(new ValidationPipe({ skipMissingProperties: true })) query: QueryValidateDto )  {
-
-    return await this.originalsService.search(query);
+  async searchPartsStrict(@Query(new ValidationPipe({ skipMissingProperties: true })) query: SearchStrictQueryValidateDto )  {
+    return await this.originalsService.searchStrict(query);
   }
 
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.originalsService.findOne(+id);
-  // }
-  //
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateOriginalDto: UpdateOriginalDto) {
-  //   return this.originalsService.update(+id, updateOriginalDto);
-  // }
-  //
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.originalsService.remove(+id);
-  // }
+  @Get('search/relevant')
+  @ApiOperation({ summary: 'Релевантный поиск' })
+  @ApiOkResponse({
+    description: 'Структура ответа, пример: http://localhost:3000/catalog/originals/search?type=relevant&text=ВАЗ&page=0&limit=1',
+    type: SearchResponse,
+    isArray: true, // <= diff is here
+  })
+  async searchPartsRelevant(@Query(new ValidationPipe({ skipMissingProperties: true })) query: SearchRelevantQueryValidateDto )  {
+    return await this.originalsService.searchRelevant(query);
+  }
+
 }

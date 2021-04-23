@@ -5,9 +5,12 @@ import { UpdateCrossDto } from './dto/update-cross.dto';
 // import { QueryValidateDto } from '../originals/dto/query-validate.dto';
 import { SearchCrossDto } from './dto/search-cross.dto';
 import { GetAllCrossDto } from './dto/get-all-cross.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { originals_categories } from '../originals/schemas/originals.schema';
+import { cross_parts } from './schemas/cross.schema';
+import { GetAllCategoriesQueryValidateDto } from '../originals/dto/query-validate.dto';
 
-@ApiTags('cross parts')
+@ApiTags('Методы API каталога кросс з/ч')
 @Controller('catalog/cross')
 export class CrossController {
   constructor(private readonly crossService: CrossService) {}
@@ -18,12 +21,24 @@ export class CrossController {
   // }
 
   @Get('search')
-  search(@Query(ValidationPipe) query: SearchCrossDto) {
+  @ApiOperation({ summary: 'Строгий поиск' })
+  @ApiOkResponse({
+    description: 'Example: https://aoc.pantus.ru/catalog/cross/search?originalbrand=LADA&originalsku=11110-2215012&page=0&limit=1',
+    type: cross_parts,
+    isArray: true, // <= diff is here
+  })
+  search(@Query(new ValidationPipe({ skipMissingProperties: true })) query: SearchCrossDto) {
     return this.crossService.search(query);
   }
 
   @Get('parts')
-  getAllParts(@Query(ValidationPipe) query: GetAllCrossDto) {
+  @ApiOperation({ summary: 'Получить все з/ч' })
+  @ApiOkResponse({
+    description: 'Example: https://aoc.pantus.ru/catalog/cross/parts?page=0&limit=1',
+    type: cross_parts,
+    isArray: true, // <= diff is here
+  })
+  getAllParts(@Query(new ValidationPipe({ skipMissingProperties: true })) query: GetAllCrossDto) {
     return this.crossService.getAll(query);
   }
 
