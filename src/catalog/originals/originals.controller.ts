@@ -59,7 +59,7 @@ export class OriginalsController {
   @Get('search/relevant')
   @ApiOperation({ summary: 'Релевантный поиск' })
   @ApiOkResponse({
-    description: 'Структура ответа, пример: http://localhost:3000/catalog/originals/search?type=relevant&text=ВАЗ&page=0&limit=1',
+    description: 'Структура ответа, пример: http://localhost:3000/catalog/originals/search/relevant?text=ВАЗ&page=0&limit=1',
     type: SearchResponse,
     isArray: true, // <= diff is here
   })
