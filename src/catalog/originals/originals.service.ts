@@ -67,68 +67,31 @@ export class OriginalsService {
     };
 
     const startTime: number = Date.now();
+    var endTime: number = null
     const count = await this.originalsParts.find({}, { CATEGORY_ID: 1 }).where({ BRAND: query.brand }).sort({ CATEGORY_ID: 1 }).distinct('CATEGORY_ID').count();
-    const brandsIds = await this.originalsParts.find({}, { CATEGORY_ID: 1 }).where({ BRAND: query.brand }).sort({ CATEGORY_ID: 1 }).distinct('CATEGORY_ID').exec();
+    const brandsIds = await this.originalsParts.find({}, { CATEGORY_ID: 1 }).where({ BRAND: query.brand }).sort({ CATEGORY_ID: 1 }).distinct('CATEGORY_ID').lean().exec();
+    const arr = await this.originalsCategories
+      .find({CATEGORY_ID: {$gte: 0}},{CATEGORY_ID: 1, CATEGORY_PARENT_ID: 1, CATEGORY_NAME: 1})
+      .sort({ CATEGORY_ID: 1 })
+      .lean()
+      .exec();
 
+    endTime = Date.now();
 
-    async function getTreeCategoriesByIds(ids, originalsCategories) {
+    let elements = {};
+    arr.forEach(obj => {
+      elements[obj.CATEGORY_ID] = obj;
+    });
 
-
-      let result = [];
-
-      const arr = await originalsCategories
-        .find({})
-        .sort({ CATEGORY_ID: 1 })
-        .skip(pageOptions.page * pageOptions.limit)
-        .limit(pageOptions.limit)
-        .lean()
-        .exec();
-
-      // console.log(arr);
-
-      function getPatch(ids) {
-        arr.forEach(elem => {
-          // console.log(elem);
-          ids.forEach((id, index) => {
-
-            // console.log(elem.CATEGORY_ID);
-            if (elem.CATEGORY_ID === id) {
-              // console.log(elem);
-              // console.log(elem.CATEGORY_ID);
-              result[index] = elem;
-              if (elem.CATEGORY_PARENT_ID !== null) {
-                // console.log(elem.CATEGORY_PARENT_ID, index);
-                recursive(elem.CATEGORY_PARENT_ID, index);
-              }
-            }
-          });
-
-        });
-
-      }
-
-      function recursive(parrentId, index) {
-        arr.forEach(elem => {
-          if (elem.CATEGORY_ID === parrentId) {
-            // console.log(elem);
-            result[index] = { ...elem, child: result[index] };
-
-            if (elem.CATEGORY_PARENT_ID !== null) {
-              recursive(elem.CATEGORY_PARENT_ID, index);
-            }
-
-          }
-        });
-      }
-
-      getPatch(ids);
-
-      return result;
-
-
+    async function  getTreeCategoriesByIds(ids) {
+      return ids.map(id => {
+        let obj = { ...elements[id] };
+        while (obj.CATEGORY_PARENT_ID) {
+          obj = { ...elements[obj.CATEGORY_PARENT_ID], CHILD: obj };
+        }
+        return obj;
+      });
     }
-
-    const endTime: number = Date.now();
 
     return [
       {
@@ -137,9 +100,10 @@ export class OriginalsService {
           explain: (endTime - startTime) + 'ms',
           query: query,
         },
-        data: await getTreeCategoriesByIds(brandsIds, this.originalsCategories),
+        data: await getTreeCategoriesByIds(pageOptions.limit === 0 ? brandsIds : brandsIds.slice(pageOptions.page * pageOptions.limit, (pageOptions.page * pageOptions.limit) + pageOptions.limit), ),
 
       }];
+
   }
 
 
