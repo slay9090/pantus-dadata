@@ -67,7 +67,7 @@ export class OriginalsService {
     };
 
     const startTime: number = Date.now();
-    var endTime: number = null
+
     const count = await this.originalsParts.find({}, { CATEGORY_ID: 1 }).where({ BRAND: query.brand }).sort({ CATEGORY_ID: 1 }).distinct('CATEGORY_ID').count();
     const brandsIds = await this.originalsParts.find({}, { CATEGORY_ID: 1 }).where({ BRAND: query.brand }).sort({ CATEGORY_ID: 1 }).distinct('CATEGORY_ID').lean().exec();
     const arr = await this.originalsCategories
@@ -76,7 +76,7 @@ export class OriginalsService {
       .lean()
       .exec();
 
-    endTime = Date.now();
+
 
     let elements = {};
     arr.forEach(obj => {
@@ -93,6 +93,12 @@ export class OriginalsService {
       });
     }
 
+
+
+    const data = await getTreeCategoriesByIds(pageOptions.limit === 0 ? brandsIds : brandsIds.slice(pageOptions.page * pageOptions.limit, (pageOptions.page * pageOptions.limit) + pageOptions.limit), )
+
+    const endTime = Date.now();
+
     return [
       {
         meta: {
@@ -100,7 +106,7 @@ export class OriginalsService {
           explain: (endTime - startTime) + 'ms',
           query: query,
         },
-        data: await getTreeCategoriesByIds(pageOptions.limit === 0 ? brandsIds : brandsIds.slice(pageOptions.page * pageOptions.limit, (pageOptions.page * pageOptions.limit) + pageOptions.limit), ),
+        data: data
 
       }];
 
