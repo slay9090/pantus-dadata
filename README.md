@@ -15,6 +15,7 @@ https://aoc.pantus.ru/doc
 
 db.originals_parts.aggregate(
 [ 
+{ $limit: 1000000}, 
 { $group: { _id: { SKU: "$SKU", CATEGORY_ID: "$CATEGORY_ID", BRAND: "$BRAND" }, count: { $sum: 1 } } },
 { $match: { count: { $gte: 2 } } },
 ],
@@ -25,6 +26,7 @@ db.originals_parts.aggregate(
 /// Удалить дубликаты из базы лимит lenght
 var duplicates = [];
 db.originals_parts.aggregate([
+  { $limit: 1000000}, 
   { $match: { 
     name: { "$ne": '' }  // discard selection criteria
 
@@ -34,7 +36,6 @@ db.originals_parts.aggregate([
     dups: { "$addToSet": "$_id" }, 
     count: { "$sum": 1 }
   }}, 
-  { $limit: 1000000 }, 
   { $match: { 
     count: { "$gt": 1 }    // Duplicates considered as count greater than one
   }}

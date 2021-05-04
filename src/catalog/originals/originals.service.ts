@@ -70,12 +70,16 @@ export class OriginalsService {
 
     const count = await this.originalsParts.find({}, { CATEGORY_ID: 1 }).where({ BRAND: query.brand }).sort({ CATEGORY_ID: 1 }).distinct('CATEGORY_ID').count();
     const brandsIds = await this.originalsParts.find({}, { CATEGORY_ID: 1 }).where({ BRAND: query.brand }).sort({ CATEGORY_ID: 1 }).distinct('CATEGORY_ID').lean().exec();
+
+
     const arr = await this.originalsCategories
       .find({CATEGORY_ID: {$gte: 0}},{CATEGORY_ID: 1, CATEGORY_PARENT_ID: 1, CATEGORY_NAME: 1})
       .sort({ CATEGORY_ID: 1 })
       .lean()
       .exec();
 
+
+    // console.log((endTime - startTime) + 'ms');
 
 
     let elements = {};
