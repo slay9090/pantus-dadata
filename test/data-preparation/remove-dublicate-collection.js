@@ -3,22 +3,27 @@ const { MongoClient } = require('mongodb');
 
 async function removeDublicate(client) {
 
-
   const db = client.db('dadata');
   const collection = db.collection('cross_parts');
 
-  const maxLenghtValue = await collection.find().count();
-
   const limitValue = 1000000;
   let offsetValue = 0;
+  let isNotEnd = true;
+  let countCollection = await collection.find().count()
 
-  while (offsetValue <= maxLenghtValue) {
-
-    console.log(offsetValue);
+  while (isNotEnd) {
 
 
-    let duplicates = [];
+    console.log(
+      `COUNT COLLECTION: ${countCollection}` +
+      `\nCurrent OFFSET: ${offsetValue}`,
+      `\nTotal: ${(offsetValue / ( countCollection / 100)).toFixed(2)}%`,
+    );
+
+    const duplicates = [];
+
     await collection.aggregate([
+        { $sort: {   sku_analog: 1 } },
         { $skip: offsetValue },
         { $limit: limitValue },
         {
@@ -55,11 +60,16 @@ async function removeDublicate(client) {
         );
       });
 
-    console.log('IDS', duplicates);
-
+    console.log('\nIDS for removies:', duplicates, '\nIDS removies count:',  duplicates.length);
     await collection.deleteMany({ _id: { $in: duplicates } });
 
-    offsetValue = offsetValue + limitValue;
+    offsetValue = (offsetValue + limitValue)-duplicates.length;
+    countCollection = await collection.find().count();
+
+    offsetValue >= countCollection ? isNotEnd = false : null
+
+
+    console.log('\n=======================================================');
   }
 
   client.close();
@@ -74,17 +84,10 @@ async function main() {
    * See https://docs.mongodb.com/ecosystem/drivers/node/ for more details
    */
   const uri = 'mongodb://root:dagdycUCFYbV9kAu@adm-dev.pantus.ru:27017/?authSource=admin&readPreference=primary&appname=MongoDB%20Compass&ssl=false';
-
-
   const client = new MongoClient(uri);
-
   try {
-    // Connect to the MongoDB cluster
     await client.connect();
-
-    // Make the appropriate DB calls
     await removeDublicate(client);
-
   } catch (e) {
     console.error(e);
   } finally {
